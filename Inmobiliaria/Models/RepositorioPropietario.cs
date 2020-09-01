@@ -10,8 +10,8 @@ namespace Inmobiliaria.Models
 {
     public class RepositorioPropietario:RepositorioBase
     {
-        public RepositorioPropietario()
-        {
+        public RepositorioPropietario(IConfiguration configuration) : base(configuration)
+		{
 
         }
 

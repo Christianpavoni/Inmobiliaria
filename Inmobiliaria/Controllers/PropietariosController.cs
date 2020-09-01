@@ -14,9 +14,9 @@ namespace Inmobiliaria.Controllers
         private readonly RepositorioPropietario repositorio;
         
 
-        public PropietariosController()
+        public PropietariosController(IConfiguration config)
         {
-            this.repositorio = new RepositorioPropietario();
+            this.repositorio = new RepositorioPropietario(config);
             
         }
 

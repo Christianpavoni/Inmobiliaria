@@ -10,8 +10,8 @@ namespace Inmobiliaria.Models
 {
     public class RepositorioInquilino : RepositorioBase
     {
-        public RepositorioInquilino()
-        {
+        public RepositorioInquilino(IConfiguration configuration) : base(configuration)
+		{
         }
 
 		public int Alta(Inquilino e)
