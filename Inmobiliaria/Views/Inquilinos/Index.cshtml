@@ -12,9 +12,7 @@
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.IdInquilino)
-            </th>
+
             <th>
                 @Html.DisplayNameFor(model => model.Nombre)
             </th>
@@ -24,36 +22,14 @@
             <th>
                 @Html.DisplayNameFor(model => model.Dni)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Telefono)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Email)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.LugarDeTrabajo)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NombreGarante)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DniGarante)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TelefonoGarante)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EmailGarante)
-            </th>
+
             <th></th>
         </tr>
     </thead>
     <tbody>
 @foreach (var item in Model) {
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdInquilino)
-            </td>
+
             <td>
                 @Html.DisplayFor(modelItem => item.Nombre)
             </td>
@@ -63,29 +39,10 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Dni)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Telefono)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Email)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LugarDeTrabajo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NombreGarante)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DniGarante)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TelefonoGarante)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EmailGarante)
-            </td>
+            
             <td>
                 @Html.ActionLink("Editar", "Edit", new { id = item.IdInquilino }) |
+                @Html.ActionLink("Detalles", "Details", new { id = item.IdInquilino }) |
                 @Html.ActionLink("Eliminar", "Delete", new { id = item.IdInquilino })
             </td>
         </tr>

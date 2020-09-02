@@ -33,7 +33,7 @@ namespace Inmobiliaria.Controllers
         // GET: PropietariosController/Details/5
         public ActionResult Details(int id)
         {
-            return View();
+            return View(repositorio.ObtenerPorId(id));
         }
 
         // GET: PropietariosController/Create
