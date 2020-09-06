@@ -3,7 +3,7 @@
 @{
     ViewData["Title"] = "Inquilinos";
 }
-
+@Html.Raw("<strong style='color: green;'>" + TempData["Mensaje"] + "</strong>")
 <h1>Inquilinos</h1>
 
 <p>
@@ -27,25 +27,26 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
+        @foreach (var item in Model)
+        {
+            <tr>
 
-            <td>
-                @Html.DisplayFor(modelItem => item.Nombre)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Apellido)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Dni)
-            </td>
-            
-            <td>
-                @Html.ActionLink("Editar", "Edit", new { id = item.IdInquilino }) |
-                @Html.ActionLink("Detalles", "Details", new { id = item.IdInquilino }) |
-                @Html.ActionLink("Eliminar", "Delete", new { id = item.IdInquilino })
-            </td>
-        </tr>
-}
+                <td>
+                    @Html.DisplayFor(modelItem => item.Nombre)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Apellido)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Dni)
+                </td>
+
+                <td>
+                    @Html.ActionLink("Editar", "Edit", new { id = item.IdInquilino }) |
+                    @Html.ActionLink("Detalles", "Details", new { id = item.IdInquilino }) |
+                    @Html.ActionLink("Eliminar", "Delete", new { id = item.IdInquilino })
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

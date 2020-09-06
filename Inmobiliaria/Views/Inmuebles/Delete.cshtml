@@ -1,0 +1,71 @@
+﻿@model Inmobiliaria.Models.Inmueble
+
+@{
+    ViewData["Title"] = "Eliminar";
+}
+@Html.Raw(TempData["Mensaje"])
+
+@Html.Raw("<strong style='color: red;'>" + TempData["Error"] + "</strong>")
+
+<h1>Eliminar</h1>
+
+<h4>¿ Esta seguro que quiere eliminar este inmueble ?</h4>
+<div>
+    <h4>Inmueble</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.IdInmueble)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.IdInmueble)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Direccion)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Direccion)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.CantDeAmbientes)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.CantDeAmbientes)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Estado)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Estado)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.TipoDeUso)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.TipoDeUso)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.TipoDeInmueble)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.TipoDeInmueble)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Precio)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Precio)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.IdPropietario)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.IdPropietario)
+        </dd>
+    </dl>
+
+    <form asp-action="Delete">
+        <input type="submit" value="Eliminar" class="btn btn-danger" /> |
+        <a asp-action="Index">Volver a la lista</a>
+    </form>
+</div>

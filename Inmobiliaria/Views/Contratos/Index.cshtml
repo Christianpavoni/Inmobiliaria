@@ -1,0 +1,77 @@
+﻿@model IEnumerable<Inmobiliaria.Models.Contrato>
+
+@{
+    ViewData["Title"] = "Contratos";
+}
+@Html.Raw("<strong style='color: green;'>" + TempData["Mensaje"] + "</strong>")
+
+@if (TempData["ErrorInq"] != null)
+{
+    @Html.Raw("<strong style='color: red;'>" + TempData["ErrorInq"] + "</strong>")
+    <a asp-action="Create" asp-controller="Inquilinos">(Crear Inquilino)</a>
+}
+
+@if (TempData["ErrorInm"] != null)
+{
+    @Html.Raw("<strong style='color: red;'>" + TempData["ErrorInm"] + "</strong>")
+    <a asp-action="Create" asp-controller="Inmuebles">(Crear Inmueble)</a>
+}
+
+<h1>Contratos</h1>
+
+<p>
+    <a asp-action="Create">Crear Contrato</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+
+            <th>
+                @Html.DisplayNameFor(model => model.Estado)
+            </th>
+
+            <th>
+                @Html.DisplayNameFor(model => model.FechaDeInicio)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FechaDeFinalizacion)
+            </th>
+            <th>
+                Inquilino
+            </th>
+            <th>
+                Direccion del Inmueble
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Estado)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.FechaDeInicio)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FechaDeFinalizacion)
+                </td>
+                <td>
+                    @(item.Inquilino.Nombre + " " + item.Inquilino.Apellido)
+                </td>
+                <td>
+                    @item.Inmueble.Direccion
+                </td>
+                <td>
+                    @Html.ActionLink("Editar", "Edit", new { id = item.IdContrato }) |
+                    @Html.ActionLink("Detalles", "Details", new { id = item.IdContrato }) |
+                    @Html.ActionLink("Eliminar", "Delete", new { id = item.IdContrato })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

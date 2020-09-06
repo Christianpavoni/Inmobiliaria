@@ -3,7 +3,7 @@
 @{
     ViewData["Title"] = "Editar Propietario";
 }
-
+@Html.Raw("<strong style='color: red;'>" + TempData["Error"] + "</strong>")
 <h1>Editar</h1>
 
 <h4>Propietario</h4>
@@ -19,22 +19,22 @@
             </div>
             <div class="form-group">
                 <label asp-for="Apellido" class="control-label"></label>
-                <input asp-for="Apellido" class="form-control" value="@Model.Apellido"/>
+                <input asp-for="Apellido" class="form-control" value="@Model.Apellido" />
                 <span asp-validation-for="Apellido" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Dni" class="control-label"></label>
-                <input asp-for="Dni" class="form-control" value="@Model.Dni"/>
+                <input asp-for="Dni" class="form-control" value="@Model.Dni" />
                 <span asp-validation-for="Dni" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Telefono" class="control-label"></label>
-                <input asp-for="Telefono" class="form-control" value="@Model.Telefono"/>
+                <input asp-for="Telefono" class="form-control" value="@Model.Telefono" />
                 <span asp-validation-for="Telefono" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" value="@Model.Email"/>
+                <input asp-for="Email" class="form-control" value="@Model.Email" />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             <div class="form-group">

@@ -338,6 +338,4 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
-/Inmobiliaria/Models/RepositorioInmueble.cs
-/Inmobiliaria/Models/Inmueble.cs
-/Inmobiliaria/Controllers/InmueblesController.cs
+

@@ -3,67 +3,69 @@
 @{
     ViewData["Title"] = "Eliminar";
 }
+@Html.Raw("<strong style='color: red;'>" + TempData["Error"] + "</strong>")
+
 
 <h1>Eliminar</h1>
 
 <h4>¿ Esta seguro que quiere eliminar este propietario ?</h4>
-    
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.IdPropietario)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Nombre)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Apellido)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Dni)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Telefono)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Email)
-                </th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            
-            
-                <tr>
-                    <td>
-                        @Html.DisplayFor(model => model.IdPropietario)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(model => model.Nombre)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(model => model.Apellido)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(model => model.Dni)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(model => model.Telefono)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(model => model.Email)
-                    </td>
-                    <td>
-                        <form asp-action="Delete">
-                            <input type="submit" value="Eliminar" class="btn btn-danger" /> |
-                            <a asp-action="Index">Volver a la lista</a>
-                        </form>
-                    </td>
 
-                </tr>
-            
-        </tbody>
-    </table>
-    
-    
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.IdPropietario)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Nombre)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Apellido)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Dni)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Telefono)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+
+
+        <tr>
+            <td>
+                @Html.DisplayFor(model => model.IdPropietario)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.Nombre)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.Apellido)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.Dni)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.Telefono)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.Email)
+            </td>
+            <td>
+                <form asp-action="Delete">
+                    <input type="submit" value="Eliminar" class="btn btn-danger" /> |
+                    <a asp-action="Index">Volver a la lista</a>
+                </form>
+            </td>
+
+        </tr>
+
+    </tbody>
+</table>
+
+

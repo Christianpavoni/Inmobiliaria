@@ -92,6 +92,7 @@ namespace Inmobiliaria.Controllers
             }
             catch (Exception ex)
             {
+                TempData["Error"] = "Error en la Edicion";
                 ViewBag.Error = ex.Message;
                 ViewBag.StackTrate = ex.StackTrace;
                 return View(p);
@@ -119,6 +120,7 @@ namespace Inmobiliaria.Controllers
             }
             catch (Exception ex)
             {
+                TempData["Error"] = "Error en la Eliminación";
                 ViewBag.Error = ex.Message;
                 ViewBag.StackTrate = ex.StackTrace;
                 return View(entidad);
