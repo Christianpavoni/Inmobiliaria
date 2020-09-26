@@ -4,6 +4,7 @@
     ViewData["Title"] = "Editar";
 }
 @Html.Raw("<strong style='color: red;'>" + TempData["Error"] + "</strong>")
+
 <h1>Editar</h1>
 
 <h4>Inmueble</h4>
@@ -27,8 +28,8 @@
                 <label asp-for="Estado" class="control-label"></label>
                 <select class="form-control" name="Estado">
                     @foreach (var item in (IList<String>)ViewBag.Estado)
-                    {                        
-                         @:<option @(item == Model.Estado ? "selected" : "") value="@item">@item</option>                        
+                    {
+                        @:<option @(item == Model.Estado ? "selected" : "") value="@item">@item</option>
                     }
                 </select>
                 <span asp-validation-for="Estado" class="text-danger"></span>

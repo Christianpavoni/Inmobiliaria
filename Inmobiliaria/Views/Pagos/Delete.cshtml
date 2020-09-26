@@ -1,0 +1,44 @@
+﻿@model Inmobiliaria.Models.Pago
+
+@{
+    ViewData["Title"] = "Eliminar";
+}
+@Html.Raw("<strong style='color: red;'>" + TempData["Error"] + "</strong>")
+<h1>Eliminar</h1>
+
+<h3>¿ Esta seguro que quiere eliminar este Pago ?</h3>
+<div>
+    <h4>Pago</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.IdPago)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.IdPago)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Importe)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Importe)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.FechaDePago)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.FechaDePago)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.IdContrato)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.IdContrato)
+        </dd>
+    </dl>
+
+    <form asp-action="Delete">
+        <input type="submit" value="Eliminar" class="btn btn-danger" /> |
+        <a asp-action="Index">Volver a la lista</a>
+    </form>
+</div>

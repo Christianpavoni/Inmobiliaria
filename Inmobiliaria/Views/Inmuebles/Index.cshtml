@@ -4,9 +4,10 @@
     ViewData["Title"] = "Inmuebles";
 }
 @Html.Raw("<strong style='color: green;'>" + TempData["Mensaje"] + "</strong>")
-@Html.Raw("<strong style='color: red;'>" + TempData["Error"] + "</strong>")
+
 @if (TempData["Error"] != null)
 {
+    @Html.Raw("<strong style='color: red;'>" + TempData["Error"] + "</strong>")
     <a asp-action="Create" asp-controller="Propietarios">(Crear Propietario)</a>
 }
 <h1>Inmuebles</h1>
@@ -55,8 +56,11 @@
                 <td>
                     @Html.ActionLink("Editar", "Edit", new { id = item.IdInmueble }) |
                     @Html.ActionLink("Detalles", "Details", new { id = item.IdInmueble }) |
-                    @Html.ActionLink("Eliminar", "Delete", new { id = item.IdInmueble })
-                </td>
+                    @if (!User.IsInRole("Empleado"))
+                    {
+                        @Html.ActionLink("Eliminar", "Delete", new { id = item.IdInmueble })
+                    }
+                    </td>
             </tr>
         }
     </tbody>

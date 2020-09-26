@@ -3,20 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Inmobiliaria.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 
 namespace Inmobiliaria.Controllers
 {
+    [Authorize]
     public class PropietariosController : Controller
     {
-        private readonly RepositorioPropietario repositorio;
+        private readonly IRepositorioPropietario repositorio;
         
 
-        public PropietariosController(IConfiguration config)
+        public PropietariosController(IRepositorioPropietario repositorio)
         {
-            this.repositorio = new RepositorioPropietario(config);
+            this.repositorio = repositorio;
             
         }
 
@@ -24,9 +26,8 @@ namespace Inmobiliaria.Controllers
         public ActionResult Index()
         {
             var lista = repositorio.ObtenerTodos();
-            ViewBag.Id = TempData["Id"];
-            if (TempData.ContainsKey("Mensaje"))
-                ViewBag.Mensaje = TempData["Mensaje"];
+            
+            
             return View(lista);
         }
 
@@ -52,7 +53,7 @@ namespace Inmobiliaria.Controllers
                 if (ModelState.IsValid)
                 {
                     repositorio.Alta(propietario);
-                    TempData["Id"] = propietario.IdPropietario;
+                    TempData["Mensaje"] = RepositorioBase.mensajeExitoso("create");
                     return RedirectToAction(nameof(Index));
                 }
                 else
@@ -60,6 +61,7 @@ namespace Inmobiliaria.Controllers
             }
             catch (Exception ex)
             {
+                TempData["Error"] = RepositorioBase.mensajeError("create");
                 ViewBag.Error = ex.Message;
                 ViewBag.StackTrace = ex.StackTrace;
                 return View(propietario);
@@ -87,12 +89,12 @@ namespace Inmobiliaria.Controllers
                 p.Email = collection["Email"];
                 p.Telefono = collection["Telefono"];
                 repositorio.Modificacion(p);
-                TempData["Mensaje"] = "Datos guardados correctamente";
+                TempData["Mensaje"] = RepositorioBase.mensajeExitoso("edit");
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
-                TempData["Error"] = "Error en la Edicion";
+                TempData["Error"] = RepositorioBase.mensajeError("edit");
                 ViewBag.Error = ex.Message;
                 ViewBag.StackTrate = ex.StackTrace;
                 return View(p);
@@ -100,6 +102,7 @@ namespace Inmobiliaria.Controllers
         }
 
         // GET: PropietariosController/Delete/5
+        [Authorize(Policy = "Administrador")]
         public ActionResult Delete(int id)
         {
                           
@@ -110,17 +113,18 @@ namespace Inmobiliaria.Controllers
         // POST: PropietariosController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "Administrador")]
         public ActionResult Delete(int id, Propietario entidad)
         {
             try
             {
                 repositorio.Baja(id);
-                TempData["Mensaje"] = "Eliminación realizada correctamente";
+                TempData["Mensaje"] = RepositorioBase.mensajeExitoso("delete");
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
-                TempData["Error"] = "Error en la Eliminación";
+                TempData["Error"] = RepositorioBase.mensajeError("delete");
                 ViewBag.Error = ex.Message;
                 ViewBag.StackTrate = ex.StackTrace;
                 return View(entidad);

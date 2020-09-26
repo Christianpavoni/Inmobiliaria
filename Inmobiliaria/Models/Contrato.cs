@@ -37,7 +37,12 @@ namespace Inmobiliaria.Models
         public int IdInmueble { get; set; }
         [ForeignKey("IdInmueble")]
         public Inmueble Inmueble { get; set; }
-        
+
+        public static String[] ObtenerEstados()
+        {
+            return new String[] { "Vigente", "No Vigente"};
+        }
+
     }
 }
 

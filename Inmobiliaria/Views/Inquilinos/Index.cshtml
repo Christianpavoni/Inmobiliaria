@@ -7,7 +7,7 @@
 <h1>Inquilinos</h1>
 
 <p>
-    <a asp-action="Create">Crear Nuevo</a>
+    <a asp-action="Create">Crear Inquilino</a>
 </p>
 <table class="table">
     <thead>
@@ -44,8 +44,11 @@
                 <td>
                     @Html.ActionLink("Editar", "Edit", new { id = item.IdInquilino }) |
                     @Html.ActionLink("Detalles", "Details", new { id = item.IdInquilino }) |
-                    @Html.ActionLink("Eliminar", "Delete", new { id = item.IdInquilino })
-                </td>
+                    @if (!User.IsInRole("Empleado"))
+                    {
+                        @Html.ActionLink("Eliminar", "Delete", new { id = item.IdInquilino })
+                    }
+                    </td>
             </tr>
         }
     </tbody>

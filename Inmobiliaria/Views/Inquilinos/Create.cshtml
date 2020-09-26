@@ -3,7 +3,7 @@
 @{
     ViewData["Title"] = "Crear Inquilino";
 }
-
+@Html.Raw("<strong style='color: red;'>" + TempData["Error"] + "</strong>")
 <h1>Crear</h1>
 
 <h4>Inquilino</h4>
@@ -40,7 +40,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="LugarDeTrabajo" class="control-label"></label>
-                <input asp-for="LugarDeTrabajo" class="form-control"  />
+                <input asp-for="LugarDeTrabajo" class="form-control" />
                 <span asp-validation-for="LugarDeTrabajo" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -55,12 +55,12 @@
             </div>
             <div class="form-group">
                 <label asp-for="TelefonoGarante" class="control-label"></label>
-                <input asp-for="TelefonoGarante" class="form-control"  />
+                <input asp-for="TelefonoGarante" class="form-control" />
                 <span asp-validation-for="TelefonoGarante" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="EmailGarante" class="control-label"></label>
-                <input asp-for="EmailGarante" class="form-control"  />
+                <input asp-for="EmailGarante" class="form-control" />
                 <span asp-validation-for="EmailGarante" class="text-danger"></span>
             </div>
             <div class="form-group">

@@ -7,7 +7,7 @@
 <h1>Propietarios</h1>
 
 <p>
-    <a asp-action="Create">Crear Nuevo</a>
+    <a asp-action="Create">Crear Propietario</a>
 </p>
 <table class="table">
     <thead>
@@ -44,7 +44,9 @@
                 <td>
                     @Html.ActionLink("Editar", "Edit", new { id = item.IdPropietario }) |
                     @Html.ActionLink("Detalles", "Details", new { id = item.IdPropietario }) |
-                    @Html.ActionLink("Eliminar", "Delete", new { id = item.IdPropietario })
+                    @if (!User.IsInRole("Empleado")) { 
+                        @Html.ActionLink("Eliminar", "Delete", new { id = item.IdPropietario })
+                    }
                 </td>
             </tr>
         }

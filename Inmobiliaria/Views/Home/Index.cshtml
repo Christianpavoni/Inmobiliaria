@@ -2,7 +2,14 @@
     ViewData["Title"] = "Inicio";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Bienvenidos</h1>
-    
-</div>
+@if (!User.Identity.IsAuthenticated)
+{
+    @await Html.PartialAsync("_Login")
+}
+else
+{
+
+<h1 class="text-center">Bienvenidos</h1>
+}
+            
+

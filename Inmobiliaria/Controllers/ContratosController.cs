@@ -3,22 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Inmobiliaria.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 
 namespace Inmobiliaria.Controllers
 {
+    [Authorize]
     public class ContratosController : Controller
     {
-        private readonly RepositorioContrato repositorio;
-        private readonly RepositorioInmueble repoInmueble;
-        private readonly RepositorioInquilino repoInquilino;
-        public ContratosController(IConfiguration config)
+        private readonly IRepositorioContrato repositorio;
+        private readonly IRepositorioInmueble repoInmueble;
+        private readonly IRepositorioInquilino repoInquilino;
+        public ContratosController(IRepositorioContrato repositorio, IRepositorioInmueble repoInmueble, IRepositorioInquilino repoInquilino)
         {
-            this.repositorio = new RepositorioContrato(config);
-            this.repoInmueble = new RepositorioInmueble(config);
-            this.repoInquilino = new RepositorioInquilino(config);
+            this.repositorio = repositorio;
+            this.repoInmueble = repoInmueble;
+            this.repoInquilino = repoInquilino;
         }
 
         // GET: ContratosController
@@ -39,7 +41,7 @@ namespace Inmobiliaria.Controllers
         {
             ViewBag.Inmuebles = repoInmueble.ObtenerTodosDisponibles();
             ViewBag.Inquilinos = repoInquilino.ObtenerTodos();
-            ViewBag.Estado = new String[] { "Vigente", "No Vigente"};
+            ViewBag.Estado = Contrato.ObtenerEstados();
             if (ViewBag.Inmuebles.Count != 0 && ViewBag.Inquilinos.Count != 0)
             {
                 return View();
@@ -47,9 +49,9 @@ namespace Inmobiliaria.Controllers
             else
             {
                 if(ViewBag.Inquilinos.Count == 0)
-                    TempData["ErrorInq"] = "Inserte algun INQUILINO primero";
+                    TempData["ErrorInq"] = RepositorioBase.mensajeErrorInsert("INQUILINO");
                 else
-                    TempData["ErrorInm"] = "No hay INMUEBLE disponible";
+                    TempData["ErrorInm"] = RepositorioBase.mensajeErrorInsert("INMUEBLE");
 
                 return RedirectToAction(nameof(Index));
             }
@@ -67,7 +69,8 @@ namespace Inmobiliaria.Controllers
                     var inmueble = repoInmueble.ObtenerPorId(entidad.IdInmueble);
                     inmueble.Estado = "Ocupado";
                     repositorio.Alta(entidad);
-                    
+                    TempData["Mensaje"] = RepositorioBase.mensajeExitoso("create");
+
                     repoInmueble.Modificacion(inmueble);
                     return RedirectToAction(nameof(Index));
                 }
@@ -75,9 +78,9 @@ namespace Inmobiliaria.Controllers
                 {
                     ViewBag.Inmuebles = repoInmueble.ObtenerTodos();
                     ViewBag.Inquilinos = repoInquilino.ObtenerTodos();
-                    ViewBag.Estado = new String[] { "Vigente", "No Vigente" };
-                    
-                    if(entidad.FechaDeFinalizacion <= entidad.FechaDeInicio)
+                    ViewBag.Estado = Contrato.ObtenerEstados();
+
+                    if (entidad.FechaDeFinalizacion <= entidad.FechaDeInicio)
                         TempData["Error"] = "La fecha de Finalizacion debe ser mayor a la de Inicio";
 
                     return View(entidad);
@@ -87,8 +90,8 @@ namespace Inmobiliaria.Controllers
             {
                 ViewBag.Inmuebles = repoInmueble.ObtenerTodos();
                 ViewBag.Inquilinos = repoInquilino.ObtenerTodos();
-                ViewBag.Estado = new String[] { "Vigente", "No Vigente" };
-                TempData["Error"] = "Error al Crear";
+                ViewBag.Estado = Contrato.ObtenerEstados();
+                TempData["Error"] = RepositorioBase.mensajeError("create");
                 ViewBag.Error = ex.Message;
                 ViewBag.StackTrate = ex.StackTrace;
                 return View(entidad);
@@ -101,11 +104,8 @@ namespace Inmobiliaria.Controllers
             var entidad = repositorio.ObtenerPorId(id);
             ViewBag.Inmuebles = repoInmueble.ObtenerTodos();
             ViewBag.Inquilinos = repoInquilino.ObtenerTodos();
-            ViewBag.Estado = new String[] { "Vigente", "No Vigente" };
-            if (TempData.ContainsKey("Mensaje"))
-                ViewBag.Mensaje = TempData["Mensaje"];
-            if (TempData.ContainsKey("Error"))
-                ViewBag.Error = TempData["Error"];
+            ViewBag.Estado = Contrato.ObtenerEstados();
+
             return View(entidad);
         }
 
@@ -123,15 +123,15 @@ namespace Inmobiliaria.Controllers
                 entidad.IdContrato = id;
                 repositorio.Modificacion(entidad);
                 repoInmueble.Modificacion(inmueble);
-                TempData["Mensaje"] = "Datos guardados correctamente";
+                TempData["Mensaje"] = RepositorioBase.mensajeExitoso("edit");
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
                 ViewBag.Inmuebles = repoInmueble.ObtenerTodos();
                 ViewBag.Inquilinos = repoInquilino.ObtenerTodos();
-                ViewBag.Estado = new String[] { "Vigente", "No Vigente" };
-                TempData["Error"] = "Error en la Edicion";
+                ViewBag.Estado = Contrato.ObtenerEstados();
+                TempData["Error"] = RepositorioBase.mensajeError("edit");
                 ViewBag.Error = ex.Message;
                 ViewBag.StackTrate = ex.StackTrace;
                 return View(entidad);
@@ -139,19 +139,18 @@ namespace Inmobiliaria.Controllers
         }
 
         // GET: ContratosController/Delete/5
+        [Authorize(Policy = "Administrador")]
         public ActionResult Delete(int id)
         {
             var entidad = repositorio.ObtenerPorId(id);
-            if (TempData.ContainsKey("Mensaje"))
-                ViewBag.Mensaje = TempData["Mensaje"];
-            if (TempData.ContainsKey("Error"))
-                ViewBag.Error = TempData["Error"];
+
             return View(entidad);
         }
 
         // POST: ContratosController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "Administrador")]
         public ActionResult Delete(int id, Contrato entidad)
         {
             try
@@ -161,12 +160,12 @@ namespace Inmobiliaria.Controllers
                 inmueble.Estado = "Disponible";
                 repositorio.Baja(id);
                 repoInmueble.Modificacion(inmueble);
-                TempData["Mensaje"] = "Eliminación realizada correctamente";
+                TempData["Mensaje"] = RepositorioBase.mensajeExitoso("delete");
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
-                TempData["Error"] = "Error en la Eliminación";
+                TempData["Error"] = RepositorioBase.mensajeError("delete");
                 ViewBag.Error = ex.Message;
                 ViewBag.StackTrate = ex.StackTrace;
                 return View(entidad);

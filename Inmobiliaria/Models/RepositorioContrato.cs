@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Inmobiliaria.Models
 {
-    public class RepositorioContrato : RepositorioBase
+    public class RepositorioContrato : RepositorioBase, IRepositorioContrato
 	{
 		public RepositorioContrato (IConfiguration configuration) : base(configuration)
 		{
@@ -173,6 +173,52 @@ namespace Inmobiliaria.Models
 				}
 			}
 			return entidad;
+		}
+
+		public IList<Contrato> ObtenerTodosVigentes()
+		{
+			IList<Contrato> res = new List<Contrato>();
+			using (SqlConnection connection = new SqlConnection(connectionString))
+			{
+				string sql = $"SELECT IdContrato, Detalle, c.Estado, Monto, FechaDeInicio, FechaDeFinalizacion, c.IdInquilino, c.IdInmueble, i.Nombre, i.Apellido, n.Direccion" +
+					$" FROM Contratos c INNER JOIN Inquilinos i ON i.IdInquilino = c.IdInquilino INNER JOIN Inmuebles n ON n.IdInmueble = c.IdInmueble" +
+					$" WHERE c.Estado='Vigente'";
+				using (SqlCommand command = new SqlCommand(sql, connection))
+				{
+					command.CommandType = CommandType.Text;
+					connection.Open();
+					var reader = command.ExecuteReader();
+					while (reader.Read())
+					{
+						Contrato entidad = new Contrato
+						{
+							IdContrato = reader.GetInt32(0),
+							Detalle = reader.GetString(1),
+							Estado = reader.GetString(2),
+							Monto = reader.GetInt32(3),
+							FechaDeInicio = reader.GetDateTime(4),
+							FechaDeFinalizacion = reader.GetDateTime(5),
+							IdInquilino = reader.GetInt32(6),
+							IdInmueble = reader.GetInt32(7),
+							Inquilino = new Inquilino
+							{
+								IdInquilino = reader.GetInt32(6),
+								Nombre = reader.GetString(8),
+								Apellido = reader.GetString(9),
+							},
+							Inmueble = new Inmueble
+							{
+								IdInmueble = reader.GetInt32(7),
+								Direccion = reader.GetString(10),
+							}
+
+						};
+						res.Add(entidad);
+					}
+					connection.Close();
+				}
+			}
+			return res;
 		}
 	}
 }
