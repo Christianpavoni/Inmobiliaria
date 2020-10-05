@@ -7,5 +7,6 @@ namespace Inmobiliaria.Models
 {
     public interface IRepositorioPago : IRepositorio<Pago>
     {
+        IList<Pago> ObtenerTodosDonde(string where);
     }
 }

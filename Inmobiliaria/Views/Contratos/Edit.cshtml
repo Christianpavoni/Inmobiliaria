@@ -19,16 +19,6 @@
                 <span asp-validation-for="Detalle" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Estado" class="control-label"></label>
-                <select class="form-control" name="Estado">
-                    @foreach (var item in (IList<String>)ViewBag.Estado)
-                    {
-                        @:<option @(item == Model.Estado ? "selected" : "") value="@item">@item</option>
-                    }
-                </select>
-                <span asp-validation-for="Estado" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <label asp-for="Monto" class="control-label"></label>
                 <input asp-for="Monto" class="form-control" />
                 <span asp-validation-for="Monto" class="text-danger"></span>
@@ -71,7 +61,7 @@
 </div>
 
 <div>
-    <a asp-action="Index">Volver a la lista</a>
+    <a href="@TempData["returnUrl"]">Volver</a>
 </div>
 
 @section Scripts {

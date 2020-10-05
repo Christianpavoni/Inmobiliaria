@@ -8,13 +8,67 @@
 @if (TempData["Error"] != null)
 {
     @Html.Raw("<strong style='color: red;'>" + TempData["Error"] + "</strong>")
-    <a asp-action="Create" asp-controller="Propietarios">(Crear Propietario)</a>
+    <a asp-action="Create" asp-controller="Propietarios" asp-route-returnUrl="@TempData["returnUrl"]">(Crear Propietario)</a>
+}
+@if (TempData["ErrorF"] != null)
+{
+    @Html.Raw("<strong style='color: red;'>" + TempData["ErrorF"] + "</strong>")
 }
 <h1>Inmuebles</h1>
 
-<p>
-    <a asp-action="Create">Crear Inmueble</a>
+<p class="d-inline">
+    <a asp-action="Create" asp-route-returnUrl="@TempData["returnUrl"]">Crear Inmueble</a>
 </p>
+
+<form asp-action="index" method="get" class="d-inline float-right">
+    @if (TempData["IdPropietario"] != null)
+    {
+        <input type="hidden" name="IdPropietario" value="@TempData["IdPropietario"]">
+    }
+    @if (TempData["Estado"] != null)
+    {
+        <input type="hidden" name="Estado" value="@TempData["Estado"]">
+    }
+    <input type="hidden" name="FechaDeInicio">
+    <input type="hidden" name="FechaDeFinalizacion">
+    <input type="submit" value="Reset" style="color:grey;" />
+</form>
+<form asp-action="index" method="get" class="float-right d-inline">
+
+    <label class="control-label">Inicio: </label>
+    <input type="date" value="@TempData["FechaDeInicio"]" name="FechaDeInicio" />
+    <label class="control-label">Fin: </label>
+    <input type="date" value="@TempData["FechaDeFinalizacion"]" name="FechaDeFinalizacion" />
+    @if (TempData["IdPropietario"] != null)
+    {
+        <input type="hidden" name="IdPropietario" value="@TempData["IdPropietario"]">
+    }
+    @if (TempData["Estado"] != null)
+    {
+        <input type="hidden" name="Estado" value="@TempData["Estado"]">
+    }
+    <input type="hidden" name="mostrar" value="1">
+    <input type="submit" value="Mostrar Disponibles" style="color:green;" />
+
+</form>
+
+@if (TempData["IdPropietario"] != null)
+{
+    <h4 class="d-inline">Asociados al propietario: </h4>
+    <h3 class="d-inline"><a asp-action="Details" asp-controller="Propietarios" asp-route-id="@TempData["IdPropietario"]" asp-route-returnUrl="@TempData["returnUrl"]">@(ViewBag.PropNombreApellido)</a> </h3>
+    @Html.ActionLink("(Quitar)", "index", new { }, new { @style = "font-size:70%;color:red;" })
+}
+
+@if (TempData["mostrar"] != null)
+{
+    <br />
+    <br />
+    <h4 class="d-inline">Disponibles : </h4>
+    <h3 class="d-inline"><a asp-action="Details" asp-controller="Inmuebles" asp-route-id="@TempData["IdInmueble"]" asp-route-returnUrl="@TempData["returnUrl"]">@(ViewBag.InmDireccion)</a> </h3>
+
+}
+
+
 <table class="table">
     <thead>
         <tr>
@@ -23,13 +77,19 @@
                 @Html.DisplayNameFor(model => model.Direccion)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Estado)
+                @Html.DisplayNameFor(model => model.Estado)<br />
+                @if (TempData["mostrar"] == null)
+                {
+                    @Html.ActionLink("Todos ", "index", new { IdPropietario = TempData["IdPropietario"] }, new { @style = "font-size:60%;color:green;" })
+                    @Html.ActionLink("Disponibles ", "index", new { Estado = "Disponible", IdPropietario = TempData["IdPropietario"] }, new { @style = "font-size:60%;color:green;" })                    
+                    @Html.ActionLink("Suspendidos", "index", new { Estado = "Suspendido", IdPropietario = TempData["IdPropietario"] }, new { @style = "font-size:60%;color:green;" })
+                }
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Precio)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.TipoDeUso)
+                Propietario
             </th>
 
             <th></th>
@@ -42,25 +102,32 @@
 
                 <td>
                     @Html.DisplayFor(modelItem => item.Direccion)
+                    <br>
+
+                    @Html.ActionLink("(Lista de contratos)", "index", "Contratos", new { IdInmueble = item.IdInmueble }, new { @style = "font-size:70%; color:red;" })
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Estado)
+
+
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Precio)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.TipoDeUso)
+                    <a asp-action="Details" asp-controller="Propietarios" asp-route-id="@item.IdPropietario" asp-route-returnUrl="@TempData["returnUrl"]">@(item.Propietario.Nombre + " " + item.Propietario.Apellido)</a>
+                    <br>
+                    @Html.ActionLink("(Lista de Inmuebles)", "index", new { IdPropietario = item.IdPropietario }, new { @style = "font-size:70%; color:red;" })
                 </td>
 
                 <td>
-                    @Html.ActionLink("Editar", "Edit", new { id = item.IdInmueble }) |
-                    @Html.ActionLink("Detalles", "Details", new { id = item.IdInmueble }) |
+                    @Html.ActionLink("Editar", "Edit", new { id = item.IdInmueble, returnUrl = TempData["returnUrl"] }) |
+                    @Html.ActionLink("Detalles", "Details", new { id = item.IdInmueble, returnUrl = TempData["returnUrl"] }) |
                     @if (!User.IsInRole("Empleado"))
                     {
-                        @Html.ActionLink("Eliminar", "Delete", new { id = item.IdInmueble })
+                        @Html.ActionLink("Eliminar", "Delete", new { id = item.IdInmueble, returnUrl = TempData["returnUrl"] })
                     }
-                    </td>
+                </td>
             </tr>
         }
     </tbody>

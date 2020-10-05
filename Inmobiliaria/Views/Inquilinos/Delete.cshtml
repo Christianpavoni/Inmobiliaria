@@ -87,7 +87,7 @@
             <td>
                 <form asp-action="Delete">
                     <input type="submit" value="Eliminar" class="btn btn-danger" /> |
-                    <a asp-action="Index">Volver a la lista</a>
+                    <a href="@TempData["returnUrl"]">Volver</a>
                 </form>
             </td>
 

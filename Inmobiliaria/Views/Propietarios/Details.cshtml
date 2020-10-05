@@ -49,6 +49,6 @@
     </dl>
 </div>
 <div>
-    @Html.ActionLink("Editar", "Edit", new { id = Model.IdPropietario }) |
-    <a asp-action="Index">Volver a la lista</a>
+    @Html.ActionLink("Editar", "Edit", new { id = Model.IdPropietario, returnUrl = TempData["returnUrl"] }) |
+    <a href="@TempData["returnUrl"]">Volver</a>
 </div>

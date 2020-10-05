@@ -7,6 +7,7 @@ namespace Inmobiliaria.Models
 {
     public interface IRepositorioInmueble : IRepositorio<Inmueble>
     {
-        IList<Inmueble> ObtenerTodosDisponibles();
+        IList<Inmueble> ObtenerTodosDonde(int IdPropietario, string Estado);
+        IList<Inmueble> ObtenerTodosDisponiblesPorFechas(string fi,string ff);
     }
 }

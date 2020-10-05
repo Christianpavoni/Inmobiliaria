@@ -7,6 +7,6 @@ namespace Inmobiliaria.Models
 {
     public interface IRepositorioContrato : IRepositorio<Contrato>
     {
-        IList<Contrato> ObtenerTodosVigentes();
+        IList<Contrato> ObtenerTodosDonde(int IdInmueble, string fechaDeInicio, string fechaDeFinalizacion);
     }
 }

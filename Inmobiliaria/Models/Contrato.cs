@@ -13,8 +13,7 @@ namespace Inmobiliaria.Models
         public int IdContrato { get; set; }
         [Required]
         public string Detalle { get; set; }
-        [Required]
-        public string Estado { get; set; }
+
         [Required]
         [DataType(DataType.Currency)]
         [Display(Name = "Monto de Alquiler Mensual")]
@@ -38,10 +37,7 @@ namespace Inmobiliaria.Models
         [ForeignKey("IdInmueble")]
         public Inmueble Inmueble { get; set; }
 
-        public static String[] ObtenerEstados()
-        {
-            return new String[] { "Vigente", "No Vigente"};
-        }
+
 
     }
 }

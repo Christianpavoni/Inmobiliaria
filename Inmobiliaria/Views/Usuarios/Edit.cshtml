@@ -63,12 +63,11 @@
         </form>
     </div>
 </div>
-@if (!User.IsInRole("Empleado"))
-{
+
     <div>
-        <a asp-action="Index">Volver a la lista</a>
+        <a href="@TempData["returnUrl"]">Volver</a>
     </div>
-}
+
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

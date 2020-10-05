@@ -20,6 +20,7 @@ namespace Inmobiliaria.Controllers
 
         public IActionResult Index()
         {
+            TempData["returnUrl"] = "/" + RouteData.Values["controller"] + Request.QueryString.Value;
             return View();
         }
 

@@ -8,30 +8,83 @@
 @if (TempData["ErrorInq"] != null)
 {
     @Html.Raw("<strong style='color: red;'>" + TempData["ErrorInq"] + "</strong>")
-    <a asp-action="Create" asp-controller="Inquilinos">(Crear Inquilino)</a>
+    <a asp-action="Create" asp-controller="Inquilinos" asp-route-returnUrl="@TempData["returnUrl"]">(Crear Inquilino)</a>
 }
 
 @if (TempData["ErrorInm"] != null)
 {
     @Html.Raw("<strong style='color: red;'>" + TempData["ErrorInm"] + "</strong>")
-    <a asp-action="Create" asp-controller="Inmuebles">(Crear Inmueble)</a>
+    <a asp-action="Create" asp-controller="Inmuebles" asp-route-returnUrl="@TempData["returnUrl"]">(Crear Inmueble)</a>
+}
+
+@if (TempData["Error"] != null)
+{
+    @Html.Raw("<strong style='color: red;'>" + TempData["Error"] + "</strong>")
 }
 
 <h1>Contratos</h1>
-
-<p>
-    <a asp-action="Create">Crear Contrato</a>
+<p class="d-inline">
+    <a asp-action="SetearFechasContrato" asp-route-returnUrl="@TempData["returnUrl"]">Crear Contrato</a>
 </p>
+
+
+<form asp-action="index" method="get" class="d-inline float-right">
+    @if (TempData["IdInmueble"] != null)
+    {
+        <input type="hidden" name="IdInmueble" value="@TempData["IdInmueble"]">
+    }
+
+    <input type="hidden" name="FechaDeInicio">
+    <input type="hidden" name="FechaDeFinalizacion">
+    <input type="submit" value="Reset" style="color:grey;" />
+</form>
+
+<form asp-action="index" method="get" class="float-right d-inline">
+
+    <label class="control-label">Inicio: </label>
+    <input type="date" value="@TempData["FechaDeInicio"]" name="FechaDeInicio" />
+    <label class="control-label">Fin: </label>
+    <input type="date" value="@TempData["FechaDeFinalizacion"]" name="FechaDeFinalizacion" />
+    @if (TempData["IdInmueble"] != null)
+    {
+        <input type="hidden" name="IdInmueble" value="@TempData["IdInmueble"]">
+    }
+
+    <input type="submit" value="Filtrar" style="color:green;" />
+
+</form>
+
+@if (TempData["IdInmueble"] != null)
+{
+    <br />
+    <br />
+    <h4 class="d-inline">Asociados al inmueble ubicado en: </h4>
+    <h3 class="d-inline"><a asp-action="Details" asp-controller="Inmuebles" asp-route-id="@TempData["IdInmueble"]" asp-route-returnUrl="@TempData["returnUrl"]">@(ViewBag.InmDireccion)</a> </h3>
+    @Html.ActionLink("(Quitar)", "index", new { }, new { @style = "font-size:70%;color:red;" })
+}
+
+
 <table class="table">
     <thead>
         <tr>
 
             <th>
-                @Html.DisplayNameFor(model => model.Estado)
+                Estado
+                <br>
+
+                @if (TempData["FechaDeInicio"] == null && TempData["FechaDeFinalizacion"] == null)
+                {
+
+                    @Html.ActionLink("Todos ", "index", new { IdInmueble = TempData["IdInmueble"], FechaDeInicio = TempData["FechaDeInicio"], FechaDeFinalizacion = TempData["FechaDeFinalizacion"] }, new { @style = "font-size:60%;color:green;" })
+                    @Html.ActionLink("Vigente ", "index", new { Estado = "Vigente", IdInmueble = TempData["IdInmueble"], FechaDeInicio = TempData["FechaDeInicio"], FechaDeFinalizacion = TempData["FechaDeFinalizacion"] }, new { @style = "font-size:60%;color:green;" })
+                    @Html.ActionLink("No Vigente", "index", new { Estado = "No Vigente", IdInmueble = TempData["IdInmueble"], FechaDeInicio = TempData["FechaDeInicio"], FechaDeFinalizacion = TempData["FechaDeFinalizacion"] }, new { @style = "font-size:60%;color:green;" })
+                }
             </th>
 
             <th>
                 @Html.DisplayNameFor(model => model.FechaDeInicio)
+
+
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.FechaDeFinalizacion)
@@ -48,10 +101,16 @@
     <tbody>
         @foreach (var item in Model)
         {
+            if((ViewBag.Estado == "Vigente" && item.FechaDeFinalizacion >= DateTime.Today) || (ViewBag.Estado == "No Vigente" && item.FechaDeFinalizacion < DateTime.Today) || ViewBag.Estado == "Todos") { 
             <tr>
 
                 <td>
-                    @Html.DisplayFor(modelItem => item.Estado)
+                    <!-- && item.FechaDeInicio <= DateTime.Today  -->
+                    @(item.FechaDeFinalizacion >= DateTime.Today ? "Vigente" : "No Vigente")
+
+                    <br>
+
+                    @Html.ActionLink("(Lista de pagos)", "index", "Pagos", new { IdContrato = item.IdContrato }, new { @style = "font-size:70%; color:red;" })
                 </td>
 
                 <td>
@@ -61,20 +120,31 @@
                     @Html.DisplayFor(modelItem => item.FechaDeFinalizacion)
                 </td>
                 <td>
-                    @(item.Inquilino.Nombre + " " + item.Inquilino.Apellido)
+                    <a asp-action="Details" asp-controller="Inquilinos" asp-route-id="@item.IdInquilino" asp-route-returnUrl="@TempData["returnUrl"]">@(item.Inquilino.Nombre + " " + item.Inquilino.Apellido)</a>
+
                 </td>
                 <td>
-                    @item.Inmueble.Direccion
+                    <a asp-action="Details" asp-controller="Inmuebles" asp-route-id="@item.IdInmueble" asp-route-returnUrl="@TempData["returnUrl"]">@item.Inmueble.Direccion</a>
+
+                    <br>
+                    @Html.ActionLink("(Lista de contratos)", "index", new { IdInmueble = item.IdInmueble }, new { @style = "font-size:70%; color:red;" })
                 </td>
                 <td>
-                    @Html.ActionLink("Editar", "Edit", new { id = item.IdContrato }) |
-                    @Html.ActionLink("Detalles", "Details", new { id = item.IdContrato }) |
+                    @Html.ActionLink("Editar", "Edit", new { id = item.IdContrato, returnUrl = TempData["returnUrl"] }) |
+                    @Html.ActionLink("Detalles", "Details", new { id = item.IdContrato, returnUrl = TempData["returnUrl"] }) |
+
+                    @if ( item.FechaDeFinalizacion >= DateTime.Today )
+                    {
+                        @Html.ActionLink("Pagar |", "Create", "Pagos", new { IdContrato = item.IdContrato, returnUrl = TempData["returnUrl"] }, new { style = "color:green;font-weight: bold;" })
+                    }
+
                     @if (!User.IsInRole("Empleado"))
                     {
-                        @Html.ActionLink("Eliminar", "Delete", new { id = item.IdContrato })
+                        @Html.ActionLink("Eliminar", "Delete", new { id = item.IdContrato, returnUrl = TempData["returnUrl"] })
                     }
-                    </td>
+                </td>
             </tr>
+            }
         }
     </tbody>
 </table>

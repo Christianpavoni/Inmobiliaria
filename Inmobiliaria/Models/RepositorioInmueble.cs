@@ -89,9 +89,10 @@ namespace Inmobiliaria.Models
 			IList<Inmueble> res = new List<Inmueble>();
 			using (SqlConnection connection = new SqlConnection(connectionString))
 			{
-				string sql = "SELECT IdInmueble, Direccion, Estado, TipoDeUso, TipoDeInmueble, CantDeAmbientes, Precio, i.IdPropietario," +
-					" p.Nombre, p.Apellido" +
-					" FROM Inmuebles i INNER JOIN Propietarios p ON i.IdPropietario = p.IdPropietario";
+				
+				string sql = $"SELECT IdInmueble, Direccion, Estado, TipoDeUso, TipoDeInmueble, CantDeAmbientes, Precio, p.IdPropietario, p.Nombre, p.Apellido" +
+					$" FROM Inmuebles i INNER JOIN Propietarios p ON i.IdPropietario = p.IdPropietario" ;
+
 				using (SqlCommand command = new SqlCommand(sql, connection))
 				{
 					command.CommandType = CommandType.Text;
@@ -164,16 +165,32 @@ namespace Inmobiliaria.Models
 			return entidad;
 		}
 
-		public IList<Inmueble> ObtenerTodosDisponibles()
+
+		public IList<Inmueble> ObtenerTodosDonde(int IdPropietario, string Estado)
 		{
 			IList<Inmueble> res = new List<Inmueble>();
 			using (SqlConnection connection = new SqlConnection(connectionString))
 			{
-				string sql = "SELECT IdInmueble, Direccion, Estado, TipoDeUso, TipoDeInmueble, CantDeAmbientes, Precio, i.IdPropietario," +
+				string where="";
+				if(IdPropietario != 0)
+                {
+					where = "WHERE i.IdPropietario=" + IdPropietario;
+					where = !String.IsNullOrEmpty(Estado) ? where + " And i.Estado='" + Estado+"'" : where;
+				}
+                else if (!String.IsNullOrEmpty(Estado))
+                {
+					where = "WHERE i.Estado='" + Estado+"'";
+					where = IdPropietario != 0 ? where + " And i.IdPropietario=" + IdPropietario : where;
+				}
+
+
+				string sql = "SELECT i.IdInmueble, Direccion, i.Estado, TipoDeUso, TipoDeInmueble, CantDeAmbientes, Precio, i.IdPropietario," +
 					" p.Nombre, p.Apellido" +
-					" FROM Inmuebles i INNER JOIN Propietarios p ON i.IdPropietario = p.IdPropietario Where i.Estado='Disponible'";
+					" FROM Inmuebles i INNER JOIN Propietarios p ON i.IdPropietario = p.IdPropietario " + where;
+
 				using (SqlCommand command = new SqlCommand(sql, connection))
 				{
+
 					command.CommandType = CommandType.Text;
 					connection.Open();
 					var reader = command.ExecuteReader();
@@ -203,5 +220,51 @@ namespace Inmobiliaria.Models
 			}
 			return res;
 		}
+
+		public IList<Inmueble> ObtenerTodosDisponiblesPorFechas(string fechaDeInicio, string fechaDeFinalizacion)
+		{
+			IList<Inmueble> res = new List<Inmueble>();
+			using (SqlConnection connection = new SqlConnection(connectionString))
+			{
+				string sql = "SELECT i.IdInmueble, Direccion, i.Estado, TipoDeUso, TipoDeInmueble, CantDeAmbientes, Precio, i.IdPropietario," +
+					" p.Nombre, p.Apellido" +
+					" FROM Inmuebles i INNER JOIN Propietarios p ON i.IdPropietario = p.IdPropietario INNER JOIN Contratos c ON i.IdInmueble = c.IdInmueble" +
+					$" WHERE (c.FechaDeInicio < @fechaDeInicio AND c.FechaDeFinalizacion < @fechaDeInicio)  OR (c.FechaDeInicio > @fechaDeFinalizacion AND c.FechaDeFinalizacion > @fechaDeFinalizacion) AND i.Estado='Disponible'";
+
+				
+				using (SqlCommand command = new SqlCommand(sql, connection))
+				{
+					command.Parameters.Add("@fechaDeInicio", SqlDbType.Date).Value = fechaDeInicio;
+					command.Parameters.Add("@fechaDeFinalizacion", SqlDbType.Date).Value = fechaDeFinalizacion;
+					command.CommandType = CommandType.Text;
+					connection.Open();
+					var reader = command.ExecuteReader();
+					while (reader.Read())
+					{
+						Inmueble entidad = new Inmueble
+						{
+							IdInmueble = reader.GetInt32(0),
+							Direccion = reader.GetString(1),
+							Estado = reader.GetString(2),
+							TipoDeUso = reader.GetString(3),
+							TipoDeInmueble = reader.GetString(4),
+							CantDeAmbientes = reader.GetInt32(5),
+							Precio = reader.GetInt32(6),
+							IdPropietario = reader.GetInt32(7),
+							Propietario = new Propietario
+							{
+								IdPropietario = reader.GetInt32(7),
+								Nombre = reader.GetString(8),
+								Apellido = reader.GetString(9),
+							}
+						};
+						res.Add(entidad);
+					}
+					connection.Close();
+				}
+			}
+			return res;
+		}
+
 	}
 }

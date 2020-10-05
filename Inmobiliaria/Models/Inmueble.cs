@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -44,19 +45,19 @@ namespace Inmobiliaria.Models
             return roles;
         }
 
-        public static String[] ObtenerTiposDeUsos()
+        public static IList<String> ObtenerTiposDeUsos()
         {          
-            return new String[] { "Comercial", "Residencial" };
+            return new List<String> { "Comercial", "Residencial" };
         }
 
-        public static String[] ObtenerEstados()
+        public static IList<String> ObtenerEstados()
         {
-            return new String[] { "Ocupado", "Disponible", "Suspendido" };
+            return new List<String> { "Disponible", "Suspendido" };
         }
 
-        public static String[] ObtenerTiposDeInmuebles()
+        public static IList<String> ObtenerTiposDeInmuebles()
         {
-            return new String[] { "Local", "Deposito", "Casa", "Departamento" };
+            return new List<String> { "Local", "Deposito", "Casa", "Departamento" };
         }
     }
 }

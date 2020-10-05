@@ -4,10 +4,15 @@
     ViewData["Title"] = "Propietarios";
 }
 @Html.Raw("<strong style='color: green;'>" + TempData["Mensaje"] + "</strong>")
+
+@if (TempData["Error"] != null)
+{
+    @Html.Raw("<strong style='color: red;'>" + TempData["Error"] + "</strong>")
+}
 <h1>Propietarios</h1>
 
-<p>
-    <a asp-action="Create">Crear Propietario</a>
+<p >
+    <a asp-action="Create" asp-route-returnUrl="@TempData["returnUrl"]">Crear Propietario</a>
 </p>
 <table class="table">
     <thead>
@@ -21,6 +26,9 @@
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Dni)
+            </th>
+            <th>
+                Inmuebles
             </th>
 
             <th></th>
@@ -40,11 +48,15 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Dni)
                 </td>
+                <td>
+                    @Html.ActionLink("Lista de Inmuebles", "index", "Inmuebles", new { IdPropietario = item.IdPropietario }, new { @style = "color:red;" })
+                </td>
 
                 <td>
                     @Html.ActionLink("Editar", "Edit", new { id = item.IdPropietario }) |
                     @Html.ActionLink("Detalles", "Details", new { id = item.IdPropietario }) |
-                    @if (!User.IsInRole("Empleado")) { 
+                    @if (!User.IsInRole("Empleado"))
+                    {
                         @Html.ActionLink("Eliminar", "Delete", new { id = item.IdPropietario })
                     }
                 </td>

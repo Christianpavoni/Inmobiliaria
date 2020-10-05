@@ -4,10 +4,15 @@
     ViewData["Title"] = "Inquilinos";
 }
 @Html.Raw("<strong style='color: green;'>" + TempData["Mensaje"] + "</strong>")
+
+@if (TempData["Error"] != null)
+{
+    @Html.Raw("<strong style='color: red;'>" + TempData["Error"] + "</strong>")
+}
 <h1>Inquilinos</h1>
 
-<p>
-    <a asp-action="Create">Crear Inquilino</a>
+<p >
+    <a asp-action="Create" asp-route-returnUrl="@TempData["returnUrl"]">Crear Inquilino</a>
 </p>
 <table class="table">
     <thead>
@@ -42,13 +47,13 @@
                 </td>
 
                 <td>
-                    @Html.ActionLink("Editar", "Edit", new { id = item.IdInquilino }) |
-                    @Html.ActionLink("Detalles", "Details", new { id = item.IdInquilino }) |
+                    @Html.ActionLink("Editar", "Edit", new { id = item.IdInquilino, returnUrl = TempData["returnUrl"] }) |
+                    @Html.ActionLink("Detalles", "Details", new { id = item.IdInquilino, returnUrl = TempData["returnUrl"] }) |
                     @if (!User.IsInRole("Empleado"))
                     {
-                        @Html.ActionLink("Eliminar", "Delete", new { id = item.IdInquilino })
+                        @Html.ActionLink("Eliminar", "Delete", new { id = item.IdInquilino, returnUrl = TempData["returnUrl"] })
                     }
-                    </td>
+                </td>
             </tr>
         }
     </tbody>

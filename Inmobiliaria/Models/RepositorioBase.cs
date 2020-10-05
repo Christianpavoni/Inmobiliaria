@@ -49,6 +49,11 @@ namespace Inmobiliaria.Models
                 return "Error en la Eliminacion";
             }
 
+            if (action == "fechas")
+            {
+                return "Error en la eleccion de las fechas";
+            }
+
             return "";
 
         }

@@ -35,22 +35,25 @@ namespace Inmobiliaria.Controllers
         [Authorize(Policy = "Administrador")]
         public ActionResult Index()
         {
+            TempData["returnUrl"] = "/" + RouteData.Values["controller"] + Request.QueryString.Value;
             var usuarios = repositorio.ObtenerTodos();
             return View(usuarios);
         }
 
         // GET: Usuarios/Details/5
         [Authorize(Policy = "Administrador")]
-        public ActionResult Details(int id)
+        public ActionResult Details(int id, string returnUrl)
         {
+            TempData["returnUrl"] = String.IsNullOrEmpty(returnUrl) ? "/" + RouteData.Values["controller"].ToString() : returnUrl;
             var e = repositorio.ObtenerPorId(id);
             return View(e);
         }
 
         // GET: Usuarios/Create
         [Authorize(Policy = "Administrador")]
-        public ActionResult Create()
+        public ActionResult Create(string returnUrl)
         {
+            TempData["returnUrl"] = String.IsNullOrEmpty(returnUrl) ? "/" + RouteData.Values["controller"].ToString() : returnUrl;
             ViewBag.Roles = Usuario.ObtenerRoles();
             return View();
         }
@@ -107,8 +110,9 @@ namespace Inmobiliaria.Controllers
 
         // GET: Usuarios/Edit/5
         [Authorize(Policy = "Empleado")]
-        public ActionResult Perfil()
+        public ActionResult Perfil(string returnUrl)
         {
+            TempData["returnUrl"] = String.IsNullOrEmpty(returnUrl) ? "/" + RouteData.Values["controller"].ToString() : returnUrl;
             ViewData["Title"] = "Mi perfil";
             var u = repositorio.ObtenerPorEmail(User.Identity.Name);
             ViewBag.Roles = Usuario.ObtenerRoles();
@@ -117,8 +121,9 @@ namespace Inmobiliaria.Controllers
 
         // GET: Usuarios/Edit/5
         [Authorize(Policy = "Administrador")]
-        public ActionResult Edit(int id)
+        public ActionResult Edit(int id,string returnUrl)
         {
+            TempData["returnUrl"] = String.IsNullOrEmpty(returnUrl) ? "/" + RouteData.Values["controller"].ToString() : returnUrl;
             ViewData["Title"] = "Editar usuario";
             var u = repositorio.ObtenerPorId(id);
             ViewBag.Roles = Usuario.ObtenerRoles();
@@ -193,8 +198,9 @@ namespace Inmobiliaria.Controllers
 
         // GET: Usuarios/Delete/5
         [Authorize(Policy = "Administrador")]
-        public ActionResult Delete(int id)
+        public ActionResult Delete(int id,string returnUrl)
         {
+            TempData["returnUrl"] = String.IsNullOrEmpty(returnUrl) ? "/" + RouteData.Values["controller"].ToString() : returnUrl;
             var entidad = repositorio.ObtenerPorId(id);
 
             return View(entidad);

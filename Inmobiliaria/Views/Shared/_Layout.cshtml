@@ -69,7 +69,7 @@
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                                 @if (User.IsInRole("Empleado"))
                                 {
-                                    <a class="dropdown-item text-dark" asp-controller="Usuarios" asp-action="Perfil"><i class="lnr lnr-user"></i> Perfil</a>
+                                    <a class="dropdown-item text-dark" asp-controller="Usuarios" asp-action="Perfil" asp-route-returnUrl="@TempData["returnUrl"]"><i class="lnr lnr-user"></i> Perfil</a>
                                 }
                                 <a class="dropdown-item text-dark" asp-controller="Usuarios" asp-action="Logout"><i class="lnr lnr-exit"></i> Salir</a>
                             </div>

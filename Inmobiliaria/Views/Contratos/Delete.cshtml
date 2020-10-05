@@ -23,12 +23,7 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Detalle)
         </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Estado)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Estado)
-        </dd>
+
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Monto)
         </dt>
@@ -63,6 +58,6 @@
 
     <form asp-action="Delete">
         <input type="submit" value="Eliminar" class="btn btn-danger" /> |
-        <a asp-action="Index">Volver a la lista</a>
+        <a href="@TempData["returnUrl"]">Volver</a>
     </form>
 </div>

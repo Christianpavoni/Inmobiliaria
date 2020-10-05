@@ -25,20 +25,24 @@ namespace Inmobiliaria.Controllers
         // GET: InquilinosController
         public ActionResult Index()
         {
+            TempData["returnUrl"] = "/" + RouteData.Values["controller"] + Request.QueryString.Value;
+
             var lista = repositorio.ObtenerTodos();
 
             return View(lista);
         }
 
         // GET: InquilinosController/Details/5
-        public ActionResult Details(int id)
+        public ActionResult Details(int id, string returnUrl)
         {
+            TempData["returnUrl"] = String.IsNullOrEmpty(returnUrl) ? "/" + RouteData.Values["controller"].ToString() : returnUrl;
             return View(repositorio.ObtenerPorId(id));
         }
 
         // GET: InquilinosController/Create
-        public ActionResult Create()
+        public ActionResult Create(string returnUrl)
         {
+            TempData["returnUrl"] = String.IsNullOrEmpty(returnUrl) ? "/" + RouteData.Values["controller"].ToString() : returnUrl;
             return View();
         }
 
@@ -69,9 +73,10 @@ namespace Inmobiliaria.Controllers
             }
         }
             // GET: InquilinosController/Edit/5
-            public ActionResult Edit(int id)
+            public ActionResult Edit(int id,string returnUrl)
             {
-                return View(repositorio.ObtenerPorId(id));
+            TempData["returnUrl"] = String.IsNullOrEmpty(returnUrl) ? "/" + RouteData.Values["controller"].ToString() : returnUrl;
+            return View(repositorio.ObtenerPorId(id));
             }
 
             // POST: InquilinosController/Edit/5
@@ -108,9 +113,10 @@ namespace Inmobiliaria.Controllers
 
         // GET: InquilinosController/Delete/5
         [Authorize(Policy = "Administrador")]
-        public ActionResult Delete(int id)
+        public ActionResult Delete(int id,string returnUrl)
             {
-                return View(repositorio.ObtenerPorId(id));
+            TempData["returnUrl"] = String.IsNullOrEmpty(returnUrl) ? "/" + RouteData.Values["controller"].ToString() : returnUrl;
+            return View(repositorio.ObtenerPorId(id));
             }
 
             // POST: InquilinosController/Delete/5

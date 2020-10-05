@@ -23,23 +23,37 @@ namespace Inmobiliaria.Controllers
         }
 
         // GET: PropietariosController
-        public ActionResult Index()
+        public ActionResult Index(int id)
         {
-            var lista = repositorio.ObtenerTodos();
+
+            TempData["returnUrl"] = "/" + RouteData.Values["controller"] + Request.QueryString.Value;
+
+            if (id == 0) { 
+                var lista = repositorio.ObtenerTodos();
+                return View(lista);
+            }
+            else
+            {
+                Propietario p = repositorio.ObtenerPorId(id);
+                return View(p);
+            }
+
             
-            
-            return View(lista);
         }
 
         // GET: PropietariosController/Details/5
-        public ActionResult Details(int id)
+
+        public ActionResult Details(int id, string returnUrl)
         {
+            TempData["returnUrl"] = String.IsNullOrEmpty(returnUrl) ? "/"+RouteData.Values["controller"].ToString() : returnUrl;
+
             return View(repositorio.ObtenerPorId(id));
         }
 
         // GET: PropietariosController/Create
-        public ActionResult Create()
+        public ActionResult Create(string returnUrl)
         {
+            TempData["returnUrl"] = String.IsNullOrEmpty(returnUrl) ? "/" + RouteData.Values["controller"].ToString() : returnUrl;
             return View();
         }
 
@@ -69,8 +83,9 @@ namespace Inmobiliaria.Controllers
         }
 
         // GET: PropietariosController/Edit/5
-        public ActionResult Edit(int id)
+        public ActionResult Edit(int id, string returnUrl)
         {
+            TempData["returnUrl"] = String.IsNullOrEmpty(returnUrl) ? "/" + RouteData.Values["controller"].ToString() : returnUrl;
             return View(repositorio.ObtenerPorId(id));
         }
 
@@ -103,9 +118,9 @@ namespace Inmobiliaria.Controllers
 
         // GET: PropietariosController/Delete/5
         [Authorize(Policy = "Administrador")]
-        public ActionResult Delete(int id)
+        public ActionResult Delete(int id, string returnUrl)
         {
-                          
+            TempData["returnUrl"] = String.IsNullOrEmpty(returnUrl) ? "/" + RouteData.Values["controller"].ToString() : returnUrl;
             return View(repositorio.ObtenerPorId(id));
             
         }

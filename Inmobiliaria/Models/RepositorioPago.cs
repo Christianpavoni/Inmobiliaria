@@ -82,7 +82,7 @@ namespace Inmobiliaria.Models
 			using (SqlConnection connection = new SqlConnection(connectionString))
 			{
 				string sql = "SELECT IdPago, Importe, p.FechaDePago, p.IdContrato," +
-					" c.Estado, c.IdInquilino, i.Nombre, i.Apellido, n.IdInmueble, n.Direccion" +
+					" c.IdInquilino, i.Nombre, i.Apellido, n.IdInmueble, n.Direccion" +
 					" FROM Pagos p INNER JOIN Contratos c ON p.IdContrato = c.IdContrato INNER JOIN Inquilinos i ON i.IdInquilino = c.IdInquilino " +
 					"INNER JOIN Inmuebles n ON n.IdInmueble = c.IdInmueble";
 				using (SqlCommand command = new SqlCommand(sql, connection))
@@ -102,18 +102,18 @@ namespace Inmobiliaria.Models
 							Contrato = new Contrato
 							{
 								IdContrato = reader.GetInt32(3),
-								Estado = reader.GetString(4),
-								IdInquilino = reader.GetInt32(5),
+								
+								IdInquilino = reader.GetInt32(4),
 								Inquilino = new Inquilino
 								{
-									IdInquilino = reader.GetInt32(5),
-									Nombre = reader.GetString(6),
-									Apellido = reader.GetString(7),
+									IdInquilino = reader.GetInt32(4),
+									Nombre = reader.GetString(5),
+									Apellido = reader.GetString(6),
 								},
 								Inmueble = new Inmueble
 								{
-									IdInmueble = reader.GetInt32(8),
-									Direccion = reader.GetString(9),
+									IdInmueble = reader.GetInt32(7),
+									Direccion = reader.GetString(8),
 								}
 
 							},
@@ -133,7 +133,7 @@ namespace Inmobiliaria.Models
 			Pago entidad = null;
 			using (SqlConnection connection = new SqlConnection(connectionString))
 			{
-				string sql = $"SELECT IdPago, Importe, FechaDePago, p.IdContrato, c.Estado, c.IdInquilino, i.Nombre, i.Apellido, n.IdInmueble, n.Direccion" +
+				string sql = $"SELECT IdPago, Importe, FechaDePago, p.IdContrato, c.IdInquilino, i.Nombre, i.Apellido, n.IdInmueble, n.Direccion" +
 					$" FROM Pagos p INNER JOIN Contratos c ON p.IdContrato = c.IdContrato INNER JOIN Inquilinos i ON i.IdInquilino = c.IdInquilino " +
 					"INNER JOIN Inmuebles n ON n.IdInmueble = c.IdInmueble" +
 					$" WHERE IdPago=@IdPago";
@@ -155,18 +155,17 @@ namespace Inmobiliaria.Models
 							Contrato = new Contrato
 							{
 								IdContrato = reader.GetInt32(3),
-								Estado = reader.GetString(4),
-								IdInquilino = reader.GetInt32(5),
+								IdInquilino = reader.GetInt32(4),
 								Inquilino = new Inquilino
 								{
-									IdInquilino = reader.GetInt32(5),
-									Nombre = reader.GetString(6),
-									Apellido = reader.GetString(7),
+									IdInquilino = reader.GetInt32(4),
+									Nombre = reader.GetString(5),
+									Apellido = reader.GetString(6),
 								},
 								Inmueble = new Inmueble
 								{
-									IdInmueble = reader.GetInt32(8),
-									Direccion = reader.GetString(9),
+									IdInmueble = reader.GetInt32(7),
+									Direccion = reader.GetString(8),
 								}
 
 							}
@@ -177,5 +176,59 @@ namespace Inmobiliaria.Models
 			}
 			return entidad;
 		}
+
+
+		public IList<Pago> ObtenerTodosDonde(string where)
+		{
+			IList<Pago> res = new List<Pago>();
+			using (SqlConnection connection = new SqlConnection(connectionString))
+			{
+				string sql = "SELECT IdPago, Importe, p.FechaDePago, p.IdContrato," +
+					" c.IdInquilino, i.Nombre, i.Apellido, n.IdInmueble, n.Direccion" +
+					" FROM Pagos p INNER JOIN Contratos c ON p.IdContrato = c.IdContrato INNER JOIN Inquilinos i ON i.IdInquilino = c.IdInquilino " +
+					"INNER JOIN Inmuebles n ON n.IdInmueble = c.IdInmueble" +
+					$" WHERE " + where; ;
+				using (SqlCommand command = new SqlCommand(sql, connection))
+				{
+					command.CommandType = CommandType.Text;
+					connection.Open();
+					var reader = command.ExecuteReader();
+					while (reader.Read())
+					{
+						Pago entidad = new Pago
+						{
+							IdPago = reader.GetInt32(0),
+							Importe = reader.GetInt32(1),
+							FechaDePago = reader.GetDateTime(2),
+							IdContrato = reader.GetInt32(3),
+
+							Contrato = new Contrato
+							{
+								IdContrato = reader.GetInt32(3),
+								IdInquilino = reader.GetInt32(4),
+								Inquilino = new Inquilino
+								{
+									IdInquilino = reader.GetInt32(4),
+									Nombre = reader.GetString(5),
+									Apellido = reader.GetString(6),
+								},
+								Inmueble = new Inmueble
+								{
+									IdInmueble = reader.GetInt32(7),
+									Direccion = reader.GetString(8),
+								}
+
+							},
+
+
+						};
+						res.Add(entidad);
+					}
+					connection.Close();
+				}
+			}
+			return res;
+		}
+
 	}
 }

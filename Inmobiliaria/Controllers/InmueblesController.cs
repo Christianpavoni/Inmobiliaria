@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,6 +7,7 @@ using Inmobiliaria.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Configuration;
 
 namespace Inmobiliaria.Controllers
@@ -16,32 +18,87 @@ namespace Inmobiliaria.Controllers
         private readonly IRepositorioInmueble repositorio;
         private readonly IRepositorioPropietario repoPropietario;
 
+
         public InmueblesController(IRepositorioInmueble repositorio, IRepositorioPropietario repoPropietario)
         {
             this.repositorio = repositorio;
             this.repoPropietario = repoPropietario;
-            
+
         }
 
         // GET: InmueblesController
-        public ActionResult Index()
+        public ActionResult Index(DateTime FechaDeInicio, DateTime FechaDeFinalizacion, string Estado, int IdPropietario, int mostrar)
         {
+            IList<Inmueble> lista = new List<Inmueble>();
 
-                var lista = repositorio.ObtenerTodos();
+            string fechaDeInicio = FechaDeInicio.ToString("yyyy-MM-dd");
+            string fechaDeFinalizacion = FechaDeFinalizacion.ToString("yyyy-MM-dd");
+
+            if (FechaDeInicio < FechaDeFinalizacion && mostrar == 1)
+            {              
+                lista = repositorio.ObtenerTodosDisponiblesPorFechas(fechaDeInicio, fechaDeFinalizacion);
+                TempData["mostrar"] = mostrar;
+            }
+            else {
+                if (FechaDeInicio != new DateTime() || FechaDeFinalizacion != new DateTime())
+                    TempData["ErrorF"] = RepositorioBase.mensajeError("fechas");
+
+            if (IdPropietario == 0 && String.IsNullOrEmpty(Estado))
+            {
+                lista = repositorio.ObtenerTodos();
+            }
+
+            if (IdPropietario != 0 && String.IsNullOrEmpty(Estado))
+            {
+                lista = repositorio.ObtenerTodosDonde(IdPropietario,Estado);
+
+            }    
+            
+            if(IdPropietario == 0 && !String.IsNullOrEmpty(Estado))
+            {
+                lista = repositorio.ObtenerTodosDonde(IdPropietario, Estado);
+
+            }
+
+            if (IdPropietario != 0 && !String.IsNullOrEmpty(Estado))
+            {
+                lista = repositorio.ObtenerTodosDonde(IdPropietario, Estado);
+
+            }
+            }
+
+            if (FechaDeInicio != new DateTime())
+                TempData["FechaDeInicio"] = fechaDeInicio;
+
+            if (FechaDeFinalizacion != new DateTime())
+                TempData["FechaDeFinalizacion"] = fechaDeFinalizacion;
+
+            TempData["returnUrl"] = "/" + RouteData.Values["controller"] + Request.QueryString.Value;
+
+            var MostrarEstados = Inmueble.ObtenerEstados();
+            MostrarEstados.Add("Todos");
+            ViewBag.MostrarEstados = MostrarEstados;
+
+            Propietario p = repoPropietario.ObtenerPorId(IdPropietario);
+            ViewBag.PropNombreApellido = (p != null) ? p.Nombre + " " + p.Apellido : "";
 
             return View(lista);
         }
 
 
         // GET: InmueblesController/Details/5
-        public ActionResult Details(int id)
+        public ActionResult Details(int id, string returnUrl)
         {
+            TempData["returnUrl"] = String.IsNullOrEmpty(returnUrl) ? "/" + RouteData.Values["controller"].ToString() : returnUrl;
             return View(repositorio.ObtenerPorId(id));
+
         }
 
         // GET: InmueblesController/Create
-        public ActionResult Create()
+        public ActionResult Create(string returnUrl)
         {
+            TempData["returnUrl"] = String.IsNullOrEmpty(returnUrl) ? "/" + RouteData.Values["controller"].ToString() : returnUrl;
+
             ViewBag.Propietarios = repoPropietario.ObtenerTodos();
             ViewBag.TipoDeUso = Inmueble.ObtenerTiposDeUsos();
             ViewBag.Estado = Inmueble.ObtenerEstados();
@@ -89,8 +146,10 @@ namespace Inmobiliaria.Controllers
         }
 
         // GET: InmueblesController/Edit/5
-        public ActionResult Edit(int id)
+        public ActionResult Edit(int id, string returnUrl)
         {
+            TempData["returnUrl"] = String.IsNullOrEmpty(returnUrl) ? "/" + RouteData.Values["controller"].ToString() : returnUrl;
+
             var entidad = repositorio.ObtenerPorId(id);
             ViewBag.Propietarios = repoPropietario.ObtenerTodos();
             ViewBag.TipoDeUso = Inmueble.ObtenerTiposDeUsos();
@@ -128,8 +187,10 @@ namespace Inmobiliaria.Controllers
 
         // GET: InmueblesController/Delete/5
         [Authorize(Policy = "Administrador")]
-        public ActionResult Delete(int id)
+        public ActionResult Delete(int id, string returnUrl)
         {
+            TempData["returnUrl"] = String.IsNullOrEmpty(returnUrl) ? "/" + RouteData.Values["controller"].ToString() : returnUrl;
+
             var entidad = repositorio.ObtenerPorId(id);
 
             return View(entidad);

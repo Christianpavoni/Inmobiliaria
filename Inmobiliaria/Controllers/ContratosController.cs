@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.VisualBasic;
 
 namespace Inmobiliaria.Controllers
 {
@@ -24,24 +25,110 @@ namespace Inmobiliaria.Controllers
         }
 
         // GET: ContratosController
-        public ActionResult Index()
+        
+        public ActionResult Index(DateTime FechaDeInicio, DateTime FechaDeFinalizacion, int IdInmueble, string Estado="Todos")
         {
-            var lista = repositorio.ObtenerTodos();
+            IList<Contrato> lista=new List<Contrato>();
+            
+            string fechaDeInicio = FechaDeInicio.ToString("yyyy-MM-dd");
+            string fechaDeFinalizacion = FechaDeFinalizacion.ToString("yyyy-MM-dd");
+
+            
+
+            if (IdInmueble == 0 )
+            {               
+
+                if (FechaDeInicio < FechaDeFinalizacion)
+                {
+                    
+                   lista = repositorio.ObtenerTodosDonde(IdInmueble, fechaDeInicio, fechaDeFinalizacion);
+                
+                }
+                else
+                {
+                    if(FechaDeInicio == new DateTime() || FechaDeFinalizacion == new DateTime())
+                        lista = repositorio.ObtenerTodos();
+                    else
+                        TempData["Error"] = RepositorioBase.mensajeError("fechas");
+                }
+            }
+            else
+            {
+                if (FechaDeInicio < FechaDeFinalizacion)
+                {
+
+                    lista = repositorio.ObtenerTodosDonde(IdInmueble, fechaDeInicio, fechaDeFinalizacion);
+
+                }
+                else
+                {
+                    if (FechaDeInicio == new DateTime() || FechaDeFinalizacion == new DateTime())
+                    {
+                        TempData["IdInmueble"] = IdInmueble;
+                        lista = repositorio.ObtenerTodosDonde(IdInmueble, fechaDeInicio, fechaDeFinalizacion);
+                    }
+                    else
+                        TempData["Error"] = RepositorioBase.mensajeError("fechas");
+                }
+            }
+            
+
+            if (FechaDeInicio != new DateTime())
+                TempData["FechaDeInicio"] = fechaDeInicio;
+
+            if (FechaDeFinalizacion != new DateTime())
+                TempData["FechaDeFinalizacion"] = fechaDeFinalizacion;
+
+
+            ViewBag.Estado = Estado;
+
+            Inmueble i = repoInmueble.ObtenerPorId(IdInmueble);
+            ViewBag.InmDireccion = (i != null) ? i.Direccion : "";
+
+            TempData["returnUrl"] = "/" + RouteData.Values["controller"] + Request.QueryString.Value;
+            
+
             return View(lista);
+
         }
 
         // GET: ContratosController/Details/5
-        public ActionResult Details(int id)
+        public ActionResult Details(int id,string returnUrl)
         {
+
+
+            TempData["returnUrl"] = String.IsNullOrEmpty(returnUrl) ? "/" + RouteData.Values["controller"].ToString() : returnUrl;
             return View(repositorio.ObtenerPorId(id));
         }
 
-        // GET: ContratosController/Create
-        public ActionResult Create()
+        public ActionResult SetearFechasContrato(string returnUrl,string fechaDeInicio, string fechaDeFinalizacion)
         {
-            ViewBag.Inmuebles = repoInmueble.ObtenerTodosDisponibles();
+            if (fechaDeInicio != "0001-01-01")
+                TempData["FechaDeInicio"] = fechaDeInicio;
+
+            if (fechaDeFinalizacion != "0001-01-01")
+                TempData["FechaDeFinalizacion"] = fechaDeFinalizacion;
+
+            TempData["returnUrl"] = String.IsNullOrEmpty(returnUrl) ? "/" + RouteData.Values["controller"].ToString() : returnUrl;
+            return View();     
+        }
+
+        // GET: ContratosController/Create
+        public ActionResult Create(string returnUrl, DateTime FechaDeInicio, DateTime FechaDeFinalizacion)
+        {
+
+
+            TempData["returnUrl"] = "/" + RouteData.Values["controller"] + "/SetearFechasContrato" + Request.QueryString.Value;
+
+            ViewBag.Inmuebles = repoInmueble.ObtenerTodosDisponiblesPorFechas(FechaDeInicio.ToString("yyyy-MM-dd"), FechaDeFinalizacion.ToString("yyyy-MM-dd")); //todos los inmuebles disponibles
             ViewBag.Inquilinos = repoInquilino.ObtenerTodos();
-            ViewBag.Estado = Contrato.ObtenerEstados();
+
+            TempData["FechaDeInicio"]= FechaDeInicio.ToString("yyyy-MM-dd");
+            TempData["FechaDeFinalizacion"]= FechaDeFinalizacion.ToString("yyyy-MM-dd");
+
+            if (FechaDeFinalizacion > FechaDeInicio)
+            {
+
             if (ViewBag.Inmuebles.Count != 0 && ViewBag.Inquilinos.Count != 0)
             {
                 return View();
@@ -55,34 +142,41 @@ namespace Inmobiliaria.Controllers
 
                 return RedirectToAction(nameof(Index));
             }
+            }
+            else
+            {
+                TempData["Error"] = "La fecha de Finalizacion debe ser mayor a la de Inicio";
+                return View("SetearFechasContrato");
+            }
         }
 
         // POST: ContratosController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Contrato entidad)
+        public ActionResult Create(Contrato entidad, string returnUrl)
         {
+
             try
             {
                 if (ModelState.IsValid && entidad.FechaDeFinalizacion > entidad.FechaDeInicio)
                 {
-                    var inmueble = repoInmueble.ObtenerPorId(entidad.IdInmueble);
-                    inmueble.Estado = "Ocupado";
+
                     repositorio.Alta(entidad);
                     TempData["Mensaje"] = RepositorioBase.mensajeExitoso("create");
 
-                    repoInmueble.Modificacion(inmueble);
+
                     return RedirectToAction(nameof(Index));
                 }
                 else
                 {
                     ViewBag.Inmuebles = repoInmueble.ObtenerTodos();
                     ViewBag.Inquilinos = repoInquilino.ObtenerTodos();
-                    ViewBag.Estado = Contrato.ObtenerEstados();
+
 
                     if (entidad.FechaDeFinalizacion <= entidad.FechaDeInicio)
                         TempData["Error"] = "La fecha de Finalizacion debe ser mayor a la de Inicio";
 
+                    TempData["returnUrl"] = String.IsNullOrEmpty(returnUrl) ? "/" + RouteData.Values["controller"].ToString() : returnUrl;
                     return View(entidad);
                 }
             }
@@ -90,7 +184,7 @@ namespace Inmobiliaria.Controllers
             {
                 ViewBag.Inmuebles = repoInmueble.ObtenerTodos();
                 ViewBag.Inquilinos = repoInquilino.ObtenerTodos();
-                ViewBag.Estado = Contrato.ObtenerEstados();
+
                 TempData["Error"] = RepositorioBase.mensajeError("create");
                 ViewBag.Error = ex.Message;
                 ViewBag.StackTrate = ex.StackTrace;
@@ -99,12 +193,14 @@ namespace Inmobiliaria.Controllers
         }
 
         // GET: ContratosController/Edit/5
-        public ActionResult Edit(int id)
+        public ActionResult Edit(int id, string returnUrl)
         {
+            TempData["returnUrl"] = String.IsNullOrEmpty(returnUrl) ? "/" + RouteData.Values["controller"].ToString() : returnUrl;
+
             var entidad = repositorio.ObtenerPorId(id);
             ViewBag.Inmuebles = repoInmueble.ObtenerTodos();
             ViewBag.Inquilinos = repoInquilino.ObtenerTodos();
-            ViewBag.Estado = Contrato.ObtenerEstados();
+
 
             return View(entidad);
         }
@@ -116,13 +212,10 @@ namespace Inmobiliaria.Controllers
         {
             try
             {
-                var inmueble = repoInmueble.ObtenerPorId(entidad.IdInmueble);
-                inmueble.Estado = "Ocupado";
-
                 
                 entidad.IdContrato = id;
                 repositorio.Modificacion(entidad);
-                repoInmueble.Modificacion(inmueble);
+
                 TempData["Mensaje"] = RepositorioBase.mensajeExitoso("edit");
                 return RedirectToAction(nameof(Index));
             }
@@ -130,7 +223,7 @@ namespace Inmobiliaria.Controllers
             {
                 ViewBag.Inmuebles = repoInmueble.ObtenerTodos();
                 ViewBag.Inquilinos = repoInquilino.ObtenerTodos();
-                ViewBag.Estado = Contrato.ObtenerEstados();
+
                 TempData["Error"] = RepositorioBase.mensajeError("edit");
                 ViewBag.Error = ex.Message;
                 ViewBag.StackTrate = ex.StackTrace;
@@ -140,8 +233,10 @@ namespace Inmobiliaria.Controllers
 
         // GET: ContratosController/Delete/5
         [Authorize(Policy = "Administrador")]
-        public ActionResult Delete(int id)
+        public ActionResult Delete(int id, string returnUrl)
         {
+            TempData["returnUrl"] = String.IsNullOrEmpty(returnUrl) ? "/" + RouteData.Values["controller"].ToString() : returnUrl;
+
             var entidad = repositorio.ObtenerPorId(id);
 
             return View(entidad);
@@ -155,11 +250,8 @@ namespace Inmobiliaria.Controllers
         {
             try
             {
-                entidad = repositorio.ObtenerPorId(id);
-                var inmueble = repoInmueble.ObtenerPorId(entidad.IdInmueble);
-                inmueble.Estado = "Disponible";
                 repositorio.Baja(id);
-                repoInmueble.Modificacion(inmueble);
+
                 TempData["Mensaje"] = RepositorioBase.mensajeExitoso("delete");
                 return RedirectToAction(nameof(Index));
             }

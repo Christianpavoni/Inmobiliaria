@@ -24,24 +24,54 @@ namespace Inmobiliaria.Controllers
         }
 
         // GET: PagosController
-        public ActionResult Index()
+        public ActionResult Index(int IdContrato)
         {
-            var lista = repositorio.ObtenerTodos();
+            
+            IList<Pago> lista = new List<Pago>();
+
+            if (IdContrato != 0) { 
+                lista = repositorio.ObtenerTodosDonde("c.IdContrato=" + IdContrato);
+                TempData["IdContrato"] = IdContrato;
+                TempData["Estado"] = repoContrato.ObtenerPorId(IdContrato).FechaDeFinalizacion >= DateTime.Today ? "Vigente" : "No Vigente";
+                
+            }
+            else
+            {
+                lista = repositorio.ObtenerTodos();
+            }
+
+            TempData["returnUrl"] = "/" + RouteData.Values["controller"] + Request.QueryString.Value;
+
+            
+
             return View(lista);
         }
 
         // GET: ContratosController/Details/5
-        public ActionResult Details(int id)
+        public ActionResult Details(int id,string returnUrl)
         {
-            return View(repositorio.ObtenerPorId(id));
+            TempData["returnUrl"] = String.IsNullOrEmpty(returnUrl) ? "/" + RouteData.Values["controller"].ToString() : returnUrl;
+            
+            Pago p = repositorio.ObtenerPorId(id);
+            TempData["Estado"] = p.Contrato.FechaDeFinalizacion >= DateTime.Today ? "Vigente" : "No Vigente";
+            return View(p);
         }
 
         // GET: ContratosController/Create
-        public ActionResult Create()
+        public ActionResult Create(int IdContrato, string returnUrl )
         {
-            ViewBag.Contratos = repoContrato.ObtenerTodosVigentes();
-            
-            if (ViewBag.Contratos.Count != 0 )
+            TempData["returnUrl"] = String.IsNullOrEmpty(returnUrl) ? "/" + RouteData.Values["controller"].ToString() : returnUrl;
+            ViewBag.Contrato = repoContrato.ObtenerPorId(IdContrato);
+
+
+            if (repoContrato.ObtenerPorId(IdContrato).FechaDeFinalizacion < DateTime.Today )
+            {               
+
+                return Redirect("/Home/Restringido");
+            }
+
+
+            if (ViewBag.Contrato != null )
             {
                 return View();
             }
@@ -49,7 +79,6 @@ namespace Inmobiliaria.Controllers
             {
                 
                 TempData["Error"] = RepositorioBase.mensajeErrorInsert("CONTRATO");
-
                 return RedirectToAction(nameof(Index));
             }
         }
@@ -69,14 +98,14 @@ namespace Inmobiliaria.Controllers
                 }
                 else
                 {
-                ViewBag.Contratos = repoContrato.ObtenerTodosVigentes();
+                
 
                 return View(entidad);
                 }
             }
             catch (Exception ex)
             {
-                ViewBag.Contratos = repoContrato.ObtenerTodosVigentes();
+                
 
                 TempData["Error"] = RepositorioBase.mensajeError("create");
                 ViewBag.Error = ex.Message;
@@ -86,11 +115,12 @@ namespace Inmobiliaria.Controllers
         }
 
         // GET: ContratosController/Edit/5
-        public ActionResult Edit(int id)
+        public ActionResult Edit(int id,string returnUrl)
         {
+            TempData["returnUrl"] = String.IsNullOrEmpty(returnUrl) ? "/" + RouteData.Values["controller"].ToString() : returnUrl;
             var entidad = repositorio.ObtenerPorId(id);
-            ViewBag.Contratos = repoContrato.ObtenerTodosVigentes();
             
+
             return View(entidad);
         }
 
@@ -107,8 +137,7 @@ namespace Inmobiliaria.Controllers
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
-            {
-                ViewBag.Contratos = repoContrato.ObtenerTodosVigentes();
+            {                
 
                 TempData["Error"] = RepositorioBase.mensajeError("edit");
                 ViewBag.Error = ex.Message;
@@ -119,8 +148,9 @@ namespace Inmobiliaria.Controllers
 
         // GET: ContratosController/Delete/5
         [Authorize(Policy = "Administrador")]
-        public ActionResult Delete(int id)
+        public ActionResult Delete(int id,string returnUrl)
         {
+            TempData["returnUrl"] = String.IsNullOrEmpty(returnUrl) ? "/" + RouteData.Values["controller"].ToString() : returnUrl;
             var entidad = repositorio.ObtenerPorId(id);
 
             return View(entidad);
