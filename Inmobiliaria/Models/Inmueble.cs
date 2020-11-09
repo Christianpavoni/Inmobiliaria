@@ -11,15 +11,14 @@ namespace Inmobiliaria.Models
 
     public class Inmueble
     {
+        [Key]
         [Display(Name = "Código")]
         public int IdInmueble { get; set; }
         [Required]
         public string Direccion { get; set; }
         [Required]
         [Display(Name = "Cantidad de Ambientes")]
-        public int CantDeAmbientes { get; set; }
-        [Required]
-        public string Estado { get; set; }
+        public int CantDeAmbientes { get; set; }        
         [Required]
         [Display(Name = "Tipo de Uso")]
         public string TipoDeUso { get; set; }   
@@ -29,10 +28,15 @@ namespace Inmobiliaria.Models
         [Required]
         [DataType(DataType.Currency)]
         public int Precio { get; set; }
+        [Required]
+        public string Estado { get; set; }
         [Display(Name = "Codigo del Propietario")]
+        
         public int IdPropietario { get; set; }
         [ForeignKey("IdPropietario")]
+        
         public Propietario Propietario { get; set; }
+        public string foto{ get; set; }
 
         public static IDictionary<int, string> ObtenerRoles()
         {

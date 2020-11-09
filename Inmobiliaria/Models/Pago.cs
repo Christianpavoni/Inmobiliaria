@@ -9,6 +9,7 @@ namespace Inmobiliaria.Models
 {
     public class Pago
     {
+        [Key]
         [Display(Name = "Código")]
         public int IdPago { get; set; }
 

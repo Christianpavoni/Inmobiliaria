@@ -20,8 +20,8 @@ namespace Inmobiliaria.Models
 			int res = -1;
 			using (SqlConnection connection = new SqlConnection(connectionString))
 			{
-				string sql = $"INSERT INTO Propietarios (Nombre, Apellido, Dni, Telefono, Email) " +
-					$"VALUES (@nombre, @apellido, @dni, @telefono, @email);" +
+				string sql = $"INSERT INTO Propietarios (Nombre, Apellido, Dni, Telefono, Email, Clave) " +
+					$"VALUES (@nombre, @apellido, @dni, @telefono, @email, @clave);" +
 					"SELECT SCOPE_IDENTITY();";//devuelve el id insertado (LAST_INSERT_ID para mysql)
 				using (SqlCommand command = new SqlCommand(sql, connection))
 				{
@@ -31,6 +31,7 @@ namespace Inmobiliaria.Models
 					command.Parameters.AddWithValue("@dni", p.Dni);
 					command.Parameters.AddWithValue("@telefono", p.Telefono);
 					command.Parameters.AddWithValue("@email", p.Email);
+					command.Parameters.AddWithValue("@clave", p.Clave);
 					connection.Open();
 					res = Convert.ToInt32(command.ExecuteScalar());
 					p.IdPropietario = res;

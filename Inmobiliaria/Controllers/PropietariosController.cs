@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Inmobiliaria.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -14,12 +15,16 @@ namespace Inmobiliaria.Controllers
     public class PropietariosController : Controller
     {
         private readonly IRepositorioPropietario repositorio;
-        
+        private IConfiguration config;
 
-        public PropietariosController(IRepositorioPropietario repositorio)
+
+        public PropietariosController(IRepositorioPropietario repositorio, IConfiguration config)
         {
             this.repositorio = repositorio;
-            
+            this.config = config;
+
+
+
         }
 
         // GET: PropietariosController
@@ -66,6 +71,13 @@ namespace Inmobiliaria.Controllers
             {
                 if (ModelState.IsValid)
                 {
+                    string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+                        password: propietario.Clave,
+                        salt: System.Text.Encoding.ASCII.GetBytes(config["Salt"]),
+                        prf: KeyDerivationPrf.HMACSHA1,
+                        iterationCount: 1000,
+                        numBytesRequested: 256 / 8));
+                    propietario.Clave = hashed;
                     repositorio.Alta(propietario);
                     TempData["Mensaje"] = RepositorioBase.mensajeExitoso("create");
                     return RedirectToAction(nameof(Index));

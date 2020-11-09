@@ -9,9 +9,11 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Inmobiliaria
 {
@@ -33,7 +35,20 @@ namespace Inmobiliaria
                     options.LoginPath = "/Usuarios/Login";
                     options.LogoutPath = "/Usuarios/Logout";
                     options.AccessDeniedPath = "/Home/Restringido";
-                });
+                })
+                .AddJwtBearer(options =>//la api web valida con token
+                 {
+                     options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                     {
+                         ValidateIssuer = true,
+                         ValidateAudience = true,
+                         ValidateLifetime = true,
+                         ValidateIssuerSigningKey = true,
+                         ValidIssuer = Configuration["TokenAuthentication:Issuer"],
+                         ValidAudience = Configuration["TokenAuthentication:Audience"],
+                         IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.ASCII.GetBytes(Configuration["TokenAuthentication:SecretKey"])),
+                     };
+                 });
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("Empleado", policy => policy.RequireClaim(ClaimTypes.Role,"Empleado"));
@@ -48,6 +63,9 @@ namespace Inmobiliaria
             services.AddTransient<IRepositorioInmueble, RepositorioInmueble>();
             services.AddTransient<IRepositorioPago, RepositorioPago>();
             services.AddTransient<IRepositorioUsuario, RepositorioUsuario>();
+            services.AddDbContext<DbContexto>(
+                options => options.UseSqlServer(
+                    Configuration["ConnectionStrings:DefaultConnection"]));
 
         }
 
